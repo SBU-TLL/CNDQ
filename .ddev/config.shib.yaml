@@ -1,0 +1,9 @@
+# DDEV override: signal local-dev to the application's auth layer.
+# Merged on top of config.yaml by DDEV. Lives under .ddev/ — never deployed.
+#
+# APP_ENV is the explicit environment flag the hardened auth gate keys on
+# (userData.php::isLocalDev() and dev.php). It defaults to "production" off-DDEV,
+# so the mock-auth bypass cannot activate outside local development even if a
+# stray .env file were ever present.
+web_environment:
+  - APP_ENV=local
