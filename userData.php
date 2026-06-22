@@ -1,23 +1,39 @@
 <?php
 
 function isAdmin() {
-    // Admin allowlist - users with special privileges
+    // Admin allowlist - real users with special privileges (apply in ALL environments)
     $adminEmails = [
         'admin@stonybrook.edu',
         'pstdenis@stonybrook.edu',
         'hlewis@stonybrook.edu',
         'tsexton@stonybrook.edu',
-        'dev_user@localhost', // Local development default user
-        'test_mail1@stonybrook.edu', // Test user
-        'test_mail2@stonybrook.edu',
-        'test_mail3@stonybrook.edu'
     ];
 
+    // Dev/test accounts are granted admin ONLY in local development — never in
+    // production. This neutralizes the privilege-escalation risk if the no-attributes
+    // fallback (dev_user@localhost) is ever reached on a misconfigured prod server.
+    if (isLocalDev()) {
+        $adminEmails = array_merge($adminEmails, [
+            'dev_user@localhost',        // Local development default user
+            'test_mail1@stonybrook.edu', // Test users
+            'test_mail2@stonybrook.edu',
+            'test_mail3@stonybrook.edu',
+        ]);
+    }
+
     $currentEmail = getCurrentUserEmail();
-    return in_array($currentEmail, $adminEmails);
+    return in_array($currentEmail, $adminEmails, true);
 }
 
 function isLocalDev() {
+    // Hard production kill-switch: when the environment is explicitly flagged as
+    // production (server-set APP_ENV, e.g. via Apache SetEnv / Ansible), the dev
+    // bypass is OFF regardless of any stray .env file that may have been deployed.
+    $env = getenv('APP_ENV') ?: ($_SERVER['APP_ENV'] ?? '');
+    if (strtolower($env) === 'production') {
+        return false;
+    }
+    // Otherwise local development is signalled by the presence of a .env file.
     return file_exists(__DIR__ . '/.env') || file_exists(dirname(__DIR__) . '/.env');
 }
 
