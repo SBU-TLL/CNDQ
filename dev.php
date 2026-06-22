@@ -1,6 +1,9 @@
 <?php
-// SECURITY: Only allow dev switcher if .env exists (Local Dev)
-if (!file_exists(__DIR__ . '/.env') && !file_exists(dirname(__DIR__) . '/.env')) {
+// SECURITY: the dev user-switcher must never be reachable in production.
+// Fail closed on an explicit production flag, and otherwise require a local .env.
+$appEnv = getenv('APP_ENV') ?: ($_SERVER['APP_ENV'] ?? '');
+$hasEnv = file_exists(__DIR__ . '/.env') || file_exists(dirname(__DIR__) . '/.env');
+if (strtolower($appEnv) === 'production' || !$hasEnv) {
     http_response_code(403);
     die('Access Denied: Dev tools are disabled in production.');
 }
