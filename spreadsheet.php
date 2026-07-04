@@ -37,7 +37,7 @@ class Spreadsheet{
 
 		$client->setAccessType('offline');
 
-		$client->setAuthConfig(__DIR__ . '/credentials.json');
+		$client->setAuthConfig(getenv('GOOGLE_APPLICATION_CREDENTIALS') ?: (__DIR__ . '/credentials.json'));
 
 		return new Google_Service_Sheets($client);
 	}
