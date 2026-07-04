@@ -1,0 +1,81 @@
+# Keep the production image clean: no dev/test/debug/secret/VCS material.
+
+# Version control & this build's own files
+.git
+.gitignore
+.dockerignore
+Dockerfile
+
+# Local DDEV development environment (dev-only; never deployed)
+.ddev/
+
+# Local env / dev-auth mock + the dev user switcher — prod uses Shibboleth
+.env
+.env.*
+dev.php
+
+# Secrets — mounted at runtime, never baked in
+credentials.json
+
+# SQLite runtime state — provided by a mounted volume, not baked
+/data
+
+# Composer deps are rebuilt in the image's build stage
+vendor/
+
+# Node / package tooling
+node_modules/
+package.json
+package-lock.json
+
+# --- Dev/test/debug scripts that must not ship to production ---
+# (several dump env/session/DB — info-disclosure risk)
+check-current-state.php
+check_*.php
+debug-*.php
+debug_*.php
+test-*.php
+test_*.php
+find_otter.php
+fix-and-test.php
+get_cols.php
+get_crafty_email.php
+list_tables.php
+quick-test.php
+# Root-level dev/debug JS + screenshot helpers
+/*.js
+# a11y/component gallery (dev review tool, not part of the game runtime)
+stylesheet.html
+
+# Test infrastructure, reports, artifacts, screenshots
+tests/
+test/
+test-results/
+artifacts/
+screenshots/
+lighthouse-reports/
+bin/
+playwright.config.js
+playwright-ui-log-*.json
+dual-test-report-*.json
+*.png
+meeting.xml
+
+# Docs / setup / editor
+docs/
+.github/
+.claude/
+.vscode/
+*.md
+*.txt
+setup_mac.sh
+setup_windows.bat
+
+# Logs & OS junk
+*.log
+.DS_Store
+**/.DS_Store
+._*
+**/._*
+*.swp
+*.swo
