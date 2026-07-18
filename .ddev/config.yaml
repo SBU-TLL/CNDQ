@@ -1,6 +1,6 @@
 name: cndq
 type: php
-docroot: ""
+docroot: "www"
 php_version: "8.3"
 webserver_type: apache-fpm
 xdebug_enabled: false
@@ -12,7 +12,12 @@ database:
 omit_containers: [db]
 use_dns_when_possible: true
 composer_version: "2"
-web_environment: []
+# APP_ENV=production engages userData.php's hard kill-switch for the in-app
+# .env/dev.php bypass: in DDEV identity comes ONLY from the real mod_shib SP
+# (bundled test IdP). The php -S + .env + dev.php workflow the Playwright
+# suite uses is unaffected (different environment).
+web_environment:
+    - APP_ENV=production
 corepack_enable: false
 
 # Key features of DDEV's config.yaml:

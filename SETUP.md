@@ -29,7 +29,7 @@ CNDQ_localroot/
 
 ## Post-Setup
 - The scripts will automatically create a `.env` file in the parent directory.
-- For **macOS Valet**, the site will be available at `https://cndq.test/CNDQ/`.
+- For **macOS Valet**, the site will be available at `https://cndq.test/CNDQ/www/`.
 - For **Herd (Windows/Mac)**, ensure the `CNDQ_localroot` folder is added to your Herd 'Paths'.
 
 ## Authentication

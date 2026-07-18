@@ -141,7 +141,7 @@ CNDQ/
 ### Key Subdirectory Note
 **IMPORTANT**: The application runs in a subdirectory structure for production parity:
 - Production: `https://server.com/CNDQ/`
-- Local (Herd): `http://cndq.test/CNDQ/`
+- Local (Herd): `http://cndq.test/CNDQ/www/`
 
 All paths use **relative references** (`./` and `../`) to work in any subdirectory. See [topology.md](topology.md) for details.
 
@@ -426,13 +426,13 @@ cd C:\Users\pauls\HerdRoot\CNDQ
 # Ensure Herd is running and serving C:\Users\pauls\HerdRoot
 
 # Visit local URL
-# http://cndq.test/CNDQ/
+# http://cndq.test/CNDQ/www/
 ```
 
 See [SETUP.md](SETUP.md) for detailed installation.
 
 ### 2. Starting a Game Session
-**Admin Panel**: `http://cndq.test/CNDQ/admin/`
+**Admin Panel**: `http://cndq.test/CNDQ/www/admin/`
 
 1. Click "Start Session"
 2. Set timer (e.g., 30 minutes)
@@ -448,7 +448,7 @@ See [SETUP.md](SETUP.md) for detailed installation.
 
 **Via API**:
 ```bash
-curl -X POST http://cndq.test/CNDQ/api/admin/npc/create \
+curl -X POST http://cndq.test/CNDQ/www/api/admin/npc/create \
   -H "Content-Type: application/json" \
   -d '{"skillLevel": "expert", "count": 2}'
 ```
@@ -525,7 +525,7 @@ npx playwright test stylesheet    # Accessibility scan (no session needed)
 - **stylesheet.spec.js** — WCAG 2.1 AA axe-core scan across dark/light/high-contrast themes; runs against `stylesheet.html` with no auth or game session required
 
 ### Accessibility Testing (`stylesheet.html`)
-`stylesheet.html` is a static component gallery showing every UI component in every state. Load it directly at `http://cndq.test/CNDQ/stylesheet.html` — no login needed. The theme switcher toggles dark / light / high-contrast. `stylesheet.spec.js` runs axe-core against all three themes automatically.
+`stylesheet.html` is a static component gallery showing every UI component in every state. Load it directly at `http://cndq.test/CNDQ/www/stylesheet.html` — no login needed. The theme switcher toggles dark / light / high-contrast. `stylesheet.spec.js` runs axe-core against all three themes automatically.
 
 ### Manual Testing Checklist
 1. Start session as admin
@@ -667,7 +667,7 @@ print_r(['shadow_prices' => $shadowPrices, 'inventory' => $inventory]);
 - **[Problem.md](Problem.md)** - Educational context and game pedagogy
 - **[NPC-STRATEGIES.md](NPC-STRATEGIES.md)** - AI player strategy documentation
 - **[SETUP.md](SETUP.md)** - Local installation guide
-- **API Docs**: Visit `http://cndq.test/CNDQ/api-docs.php` (when running locally)
+- **API Docs**: Visit `http://cndq.test/CNDQ/www/api-docs.php` (when running locally)
 
 ---
 

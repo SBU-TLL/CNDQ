@@ -1,10 +1,8 @@
 # Production - use Shibboleth authentication
 # Note: Local development uses .env file instead (Herd uses Nginx, not Apache)
-<IfModule mod_shib>
-    AuthType shibboleth
-    ShibRequestSetting requireSession true
-    require shibboleth
-</IfModule>
+AuthType shibboleth
+ShibRequestSetting requireSession true
+require shibboleth
 SetEnv PHP_VALUE "session.save_path=/home/tltsecure/apache2/htdocs/userData/sessionData"
 
 # URL Rewriting: Make .php extension optional

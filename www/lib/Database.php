@@ -18,10 +18,12 @@
 function cndq_data_dir(): string {
     $script = $_SERVER['SCRIPT_FILENAME'] ?? '';
     if (empty($script) || str_contains($script, 'server.php')) {
-        return __DIR__ . '/../data';
+        return dirname(__DIR__, 2) . '/data';
     }
     $dir = dirname($script);
-    for ($i = 0; $i < 4; $i++) {
+    // Walk high enough to reach the repo root from the deepest endpoints:
+    // www/api/admin/npc/*.php sits 4 levels below it.
+    for ($i = 0; $i < 6; $i++) {
         if (is_dir($dir . '/data') || is_link($dir . '/data')) {
             return $dir . '/data';
         }
@@ -29,7 +31,8 @@ function cndq_data_dir(): string {
         if ($parent === $dir) break;
         $dir = $parent;
     }
-    return __DIR__ . '/../data';
+    // lib/ lives inside www/ (the web root); data/ sits next to www/, outside it.
+    return dirname(__DIR__, 2) . '/data';
 }
 
 class Database {
