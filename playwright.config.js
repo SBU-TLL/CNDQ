@@ -34,14 +34,14 @@ module.exports = defineConfig({
     // Run from the parent directory so http://localhost:8000/CNDQ/ resolves correctly.
     // Set reuseExistingServer:true so a manually-started server is reused without error.
     webServer: {
-        command: 'php -S localhost:8000 -t ..',
-        url: 'http://localhost:8000/CNDQ/api/session/status.php',
+        command: 'php -S localhost:8000 -t static',
+        url: 'http://localhost:8000/api/session/status.php',
         reuseExistingServer: true,
         timeout: 15_000,
     },
 
     use: {
-        baseURL: process.env.BASE_URL || 'http://localhost:8000/CNDQ/',
+        baseURL: process.env.BASE_URL || 'http://localhost:8000/',
         headless: true,
         screenshot: 'only-on-failure',
         video: 'off',

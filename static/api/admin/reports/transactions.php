@@ -35,7 +35,9 @@ try {
         $report[] = [
             'Time' => date('Y-m-d H:i:s', $txn['timestamp'] ?? time()),
             'Buyer' => $txn['buyerName'],
+            'Buyer Login' => $txn['buyerEmail'] ?? '',
             'Seller' => $txn['sellerName'],
+            'Seller Login' => $txn['sellerEmail'] ?? '',
             'Chemical' => $txn['chemical'],
             'Quantity' => $txn['quantity'],
             'Price' => ($txn['pricePerGallon'] < 0 ? '-$' : '$') . number_format(abs($txn['pricePerGallon']), 2),

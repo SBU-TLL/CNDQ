@@ -255,6 +255,17 @@ class ReportViewer extends LitElement {
                 height: 200px;
                 color: var(--color-brand-primary);
             }
+
+            .login-badge {
+                font-size: 0.75rem;
+                font-weight: 500;
+                padding: 0.2rem 0.6rem;
+                border-radius: 1rem;
+                background-color: var(--color-bg-secondary);
+                color: var(--color-text-secondary);
+                border: 1px solid var(--color-border);
+                font-family: monospace;
+            }
         `
     ];
 

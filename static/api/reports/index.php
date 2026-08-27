@@ -27,6 +27,11 @@ try {
 
     $response = ['success' => true];
 
+    // Admins get the real login so the report viewer can display it
+    if (isAdmin()) {
+        $response['teamLogin'] = $currentUserEmail;
+    }
+
     // 1. Financial Summary
     if ($type === 'all' || $type === 'financials') {
         $transactions = $storage->getTransactions()['transactions'];

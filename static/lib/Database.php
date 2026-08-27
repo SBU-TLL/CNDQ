@@ -17,19 +17,14 @@
  */
 function cndq_data_dir(): string {
     $script = $_SERVER['SCRIPT_FILENAME'] ?? '';
-    if (empty($script) || str_contains($script, 'server.php')) {
-        return __DIR__ . '/../data';
-    }
-    $dir = dirname($script);
-    for ($i = 0; $i < 4; $i++) {
-        if (is_dir($dir . '/data') || is_link($dir . '/data')) {
-            return $dir . '/data';
+    if (!empty($script) && !str_contains($script, 'server.php')) {
+        $pos = strpos($script, '/static/');
+        if ($pos !== false) {
+            return substr($script, 0, $pos) . '/data';
         }
-        $parent = dirname($dir);
-        if ($parent === $dir) break;
-        $dir = $parent;
     }
-    return __DIR__ . '/../data';
+    // Herd/local dev fallback: static/lib/../../data = repo-root/data
+    return __DIR__ . '/../../data';
 }
 
 class Database {
