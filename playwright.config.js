@@ -31,17 +31,17 @@ module.exports = defineConfig({
     ],
 
     // Auto-start the PHP built-in server before tests and stop it after.
-    // Run from the parent directory so http://localhost:8000/CNDQ/ resolves correctly.
+    // Run from the parent directory so http://localhost:8000/CNDQ/www/ resolves correctly.
     // Set reuseExistingServer:true so a manually-started server is reused without error.
     webServer: {
-        command: 'php -S localhost:8000 -t static',
-        url: 'http://localhost:8000/api/session/status.php',
+        command: 'php -S localhost:8000 -t ..',
+        url: 'http://localhost:8000/CNDQ/www/api/session/status.php',
         reuseExistingServer: true,
         timeout: 15_000,
     },
 
     use: {
-        baseURL: process.env.BASE_URL || 'http://localhost:8000/',
+        baseURL: process.env.BASE_URL || 'http://localhost:8000/CNDQ/www/',
         headless: true,
         screenshot: 'only-on-failure',
         video: 'off',

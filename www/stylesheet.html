@@ -1,0 +1,796 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CNDQ — Component Gallery</title>
+
+    <!-- Same import map as index.php -->
+    <script type="importmap">
+    {
+        "imports": {
+            "lit": "https://cdn.jsdelivr.net/npm/lit@3/index.js",
+            "lit/": "https://cdn.jsdelivr.net/npm/lit@3/",
+            "lit-element": "https://cdn.jsdelivr.net/npm/lit-element@4/index.js",
+            "lit-element/": "https://cdn.jsdelivr.net/npm/lit-element@4/",
+            "@lit/reactive-element": "https://cdn.jsdelivr.net/npm/@lit/reactive-element@2/reactive-element.js",
+            "@lit/reactive-element/": "https://cdn.jsdelivr.net/npm/@lit/reactive-element@2/",
+            "lit-html": "https://cdn.jsdelivr.net/npm/lit-html@3/lit-html.js",
+            "lit-html/": "https://cdn.jsdelivr.net/npm/lit-html@3/",
+            "lit/directives/unsafe-html.js": "https://cdn.jsdelivr.net/npm/lit-html@3/directives/unsafe-html.js"
+        }
+    }
+    </script>
+
+    <!-- UnoCSS Runtime — same as index.php -->
+    <script src="https://cdn.jsdelivr.net/npm/@unocss/runtime@0.58.5/uno.global.js"></script>
+    <script src="./css/unocss-config.js"></script>
+
+    <link rel="stylesheet" href="./css/styles.css">
+    <link rel="stylesheet" href="./css/design-system.css">
+
+    <style>
+        /* Gallery chrome — not game styles */
+        .sg-section {
+            margin: 2rem 0;
+            padding: 2rem;
+            background-color: var(--color-bg-secondary);
+            border-radius: 0.75rem;
+            border: 1px solid var(--color-border);
+        }
+        .sg-section-title {
+            font-size: 0.7rem;
+            font-weight: 700;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            color: var(--color-text-tertiary);
+            margin-bottom: 1.5rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 1px solid var(--color-border);
+        }
+        .sg-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+            align-items: flex-start;
+            margin-bottom: 1rem;
+        }
+        .sg-label {
+            font-size: 0.7rem;
+            color: var(--color-text-tertiary);
+            margin-top: 0.35rem;
+            font-family: monospace;
+        }
+        .sg-swatch {
+            width: 80px;
+            height: 48px;
+            border-radius: 0.375rem;
+            border: 1px solid var(--color-border);
+        }
+        .sg-swatch-cell {
+            display: flex;
+            flex-direction: column;
+            gap: 0.25rem;
+        }
+        .sg-contrast-badge {
+            font-size: 0.6rem;
+            font-weight: 700;
+            padding: 1px 4px;
+            border-radius: 2px;
+            background: #000;
+            color: #fff;
+            font-family: monospace;
+        }
+        /* Theme switcher bar */
+        .sg-toolbar {
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            background: var(--color-bg-primary);
+            border-bottom: 2px solid var(--color-brand-primary);
+            padding: 0.75rem 2rem;
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+            flex-wrap: wrap;
+        }
+        .sg-toolbar-title {
+            font-weight: 700;
+            font-size: 0.875rem;
+            color: var(--color-text-primary); /* avoid brand-primary which fails on light bg */
+            font-family: monospace;
+        }
+        .sg-theme-btn {
+            padding: 0.35rem 0.75rem;
+            border-radius: 0.375rem;
+            font-size: 0.75rem;
+            font-weight: 600;
+            border: 1px solid var(--color-border);
+            background: var(--color-bg-tertiary);
+            color: var(--color-text-primary);
+            cursor: pointer;
+        }
+        .sg-theme-btn[aria-pressed="true"] {
+            background: var(--color-brand-primary);
+            color: #000000; /* pure black — passes WCAG AA on all green variants incl. #00ff00 */
+            border-color: var(--color-brand-primary);
+        }
+        /* Show focus states always in the focus demo */
+        .sg-focus-demo *:focus {
+            outline: 2px solid var(--color-brand-primary);
+            outline-offset: 2px;
+        }
+        /* Inline modal demo (not hidden) */
+        .sg-modal-demo {
+            position: relative;
+            border: 2px dashed var(--color-border);
+            border-radius: 0.5rem;
+            padding: 1.5rem;
+            background: var(--color-bg-primary);
+            max-width: 480px;
+        }
+        /* Skip link */
+        .skip-link {
+            position: absolute;
+            top: -999px;
+            left: 0;
+            background: var(--color-brand-primary);
+            color: white;
+            padding: 0.5rem 1rem;
+            z-index: 9999;
+            border-radius: 0 0 0.375rem 0;
+        }
+        .skip-link:focus {
+            top: 0;
+        }
+        /* Notification toast demo */
+        .toast {
+            display: flex;
+            align-items: flex-start;
+            gap: 0.75rem;
+            padding: 0.875rem 1rem;
+            border-radius: 0.5rem;
+            border-left: 4px solid;
+            max-width: 360px;
+        }
+        .toast-success {
+            background: color-mix(in srgb, var(--color-success) 15%, var(--color-bg-secondary));
+            border-color: var(--color-success);
+            color: var(--color-text-primary);
+        }
+        .toast-error {
+            background: color-mix(in srgb, var(--color-error) 15%, var(--color-bg-secondary));
+            border-color: var(--color-error);
+            color: var(--color-text-primary);
+        }
+        .toast-warning {
+            background: color-mix(in srgb, var(--color-warning) 15%, var(--color-bg-secondary));
+            border-color: var(--color-warning);
+            color: var(--color-text-primary);
+        }
+        .toast-info {
+            background: color-mix(in srgb, var(--color-info) 15%, var(--color-bg-secondary));
+            border-color: var(--color-info);
+            color: var(--color-text-primary);
+        }
+        /* ── Simulated hover states ─────────────────────────────────────────
+           .is-hovered mirrors the matching :hover rule in styles.css so that
+           axe-core can scan the rendered colour combination statically.
+           For Lit Web Components (shadow DOM) we use .sg-* replicas below
+           because axe cannot pierce shadow boundaries without extra config. */
+        .listing-item.is-hovered    { background-color: var(--color-bg-secondary); }
+        .btn-secondary.is-hovered   { background-color: var(--color-bg-secondary); }
+        /* btn-primary/success/error use filter:brightness(0.9) — no colour
+           change to scan; contrast is inherited from the base button colour. */
+
+        /* Static replica of notification-manager.js Lit component internals.
+           The live component uses shadow DOM so axe cannot see it from here. */
+        .sg-notif-item {
+            padding: 0.75rem;
+            background-color: var(--color-bg-tertiary);
+            border-radius: 0.5rem;
+            border-left: 4px solid var(--color-border);
+            margin-bottom: 0.5rem;
+            max-width: 320px;
+        }
+        .sg-notif-item.is-hovered   { background-color: var(--color-bg-secondary); }
+        .sg-notif-type {
+            font-size: 0.65rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            color: var(--color-text-tertiary);
+        }
+        .sg-notif-time {
+            font-size: 0.65rem;
+            color: var(--color-text-tertiary);
+            margin-left: 0.5rem;
+        }
+        .sg-notif-message {
+            font-size: 0.875rem;
+            color: var(--color-text-primary);
+            margin-top: 0.25rem;
+        }
+
+        /* Animation demos */
+        @keyframes spin { to { transform: rotate(360deg); } }
+        @keyframes pulse-green { 0%,100%{opacity:1} 50%{opacity:.4} }
+        @keyframes shake { 0%,100%{transform:translateX(0)} 25%{transform:translateX(-4px)} 75%{transform:translateX(4px)} }
+        @keyframes success-pop { 0%{transform:scale(0.8);opacity:0} 60%{transform:scale(1.1)} 100%{transform:scale(1);opacity:1} }
+        .anim-spin { animation: spin 1s linear infinite; display: inline-block; }
+        .anim-pulse { animation: pulse-green 2s ease-in-out infinite; }
+        .anim-shake { animation: shake 0.4s ease-in-out; }
+        .anim-pop { animation: success-pop 0.4s ease-out; }
+    </style>
+</head>
+<body>
+
+<a href="#main-content" class="skip-link">Skip to main content</a>
+
+<!-- ARIA live region (same as game) -->
+<div id="sr-announcer" role="status" aria-live="polite" aria-atomic="true"
+     style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0,0,0,0)"></div>
+
+<!-- ── Toolbar ──────────────────────────────────────────────────────────── -->
+<nav class="sg-toolbar" aria-label="Component gallery controls">
+    <span class="sg-toolbar-title">CNDQ / stylesheet.html</span>
+    <div role="group" aria-label="Theme">
+        <button class="sg-theme-btn" aria-pressed="true"  onclick="setTheme('dark',this)">Dark</button>
+        <button class="sg-theme-btn" aria-pressed="false" onclick="setTheme('light',this)">Light</button>
+        <button class="sg-theme-btn" aria-pressed="false" onclick="setTheme('high-contrast',this)">High Contrast</button>
+    </div>
+    <nav aria-label="Sections" style="font-size:0.75rem;display:flex;gap:0.75rem;flex-wrap:wrap">
+        <a href="#colors"     style="color:var(--color-info)">Colors</a>
+        <a href="#typography" style="color:var(--color-info)">Type</a>
+        <a href="#buttons"    style="color:var(--color-info)">Buttons</a>
+        <a href="#badges"     style="color:var(--color-info)">Badges</a>
+        <a href="#cards"      style="color:var(--color-info)">Cards</a>
+        <a href="#forms"      style="color:var(--color-info)">Forms</a>
+        <a href="#tables"     style="color:var(--color-info)">Tables</a>
+        <a href="#toasts"     style="color:var(--color-info)">Toasts</a>
+        <a href="#modals"     style="color:var(--color-info)">Modals</a>
+        <a href="#focus"        style="color:var(--color-info)">Focus</a>
+        <a href="#hover-states" style="color:var(--color-info)">Hover</a>
+        <a href="#animations"   style="color:var(--color-info)">Animations</a>
+    </nav>
+</nav>
+
+<main id="main-content" style="max-width:1280px;margin:0 auto;padding:2rem">
+
+    <!-- ── 1. Color Palette ──────────────────────────────────────────────── -->
+    <section id="colors" class="sg-section" aria-labelledby="colors-title">
+        <h2 id="colors-title" class="sg-section-title">Color Palette — styles.css variables</h2>
+
+        <h3 style="font-size:0.8rem;margin-bottom:0.75rem;color:var(--color-text-secondary)">Backgrounds</h3>
+        <div class="sg-row">
+            <div class="sg-swatch-cell"><div class="sg-swatch" style="background:var(--color-bg-primary)"></div><span class="sg-label">--color-bg-primary</span></div>
+            <div class="sg-swatch-cell"><div class="sg-swatch" style="background:var(--color-bg-secondary)"></div><span class="sg-label">--color-bg-secondary</span></div>
+            <div class="sg-swatch-cell"><div class="sg-swatch" style="background:var(--color-bg-tertiary)"></div><span class="sg-label">--color-bg-tertiary</span></div>
+        </div>
+
+        <h3 style="font-size:0.8rem;margin:1rem 0 0.75rem;color:var(--color-text-secondary)">Text</h3>
+        <div class="sg-row">
+            <div class="sg-swatch-cell"><div class="sg-swatch" style="background:var(--color-text-primary)"></div><span class="sg-label">--color-text-primary</span></div>
+            <div class="sg-swatch-cell"><div class="sg-swatch" style="background:var(--color-text-secondary)"></div><span class="sg-label">--color-text-secondary</span></div>
+            <div class="sg-swatch-cell"><div class="sg-swatch" style="background:var(--color-text-tertiary)"></div><span class="sg-label">--color-text-tertiary</span></div>
+        </div>
+
+        <h3 style="font-size:0.8rem;margin:1rem 0 0.75rem;color:var(--color-text-secondary)">Brand &amp; Status</h3>
+        <div class="sg-row">
+            <div class="sg-swatch-cell"><div class="sg-swatch" style="background:var(--color-brand-primary)"></div><span class="sg-label">--color-brand-primary</span></div>
+            <div class="sg-swatch-cell"><div class="sg-swatch" style="background:var(--color-success)"></div><span class="sg-label">--color-success</span></div>
+            <div class="sg-swatch-cell"><div class="sg-swatch" style="background:var(--color-error)"></div><span class="sg-label">--color-error</span></div>
+            <div class="sg-swatch-cell"><div class="sg-swatch" style="background:var(--color-warning)"></div><span class="sg-label">--color-warning</span></div>
+            <div class="sg-swatch-cell"><div class="sg-swatch" style="background:var(--color-info)"></div><span class="sg-label">--color-info</span></div>
+        </div>
+
+        <h3 style="font-size:0.8rem;margin:1rem 0 0.75rem;color:var(--color-text-secondary)">Chemical Elements (WCAG AA target)</h3>
+        <div class="sg-row">
+            <div class="sg-swatch-cell">
+                <div class="sg-swatch" style="background:var(--color-chemical-c);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:1.25rem;color:var(--color-bg-primary)">C</div>
+                <span class="sg-label">--color-chemical-c</span>
+            </div>
+            <div class="sg-swatch-cell">
+                <div class="sg-swatch" style="background:var(--color-chemical-n);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:1.25rem;color:var(--color-bg-primary)">N</div>
+                <span class="sg-label">--color-chemical-n</span>
+            </div>
+            <div class="sg-swatch-cell">
+                <div class="sg-swatch" style="background:var(--color-chemical-d);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:1.25rem;color:var(--color-bg-primary)">D</div>
+                <span class="sg-label">--color-chemical-d</span>
+            </div>
+            <div class="sg-swatch-cell">
+                <div class="sg-swatch" style="background:var(--color-chemical-q);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:1.25rem;color:var(--color-bg-primary)">Q</div>
+                <span class="sg-label">--color-chemical-q</span>
+            </div>
+        </div>
+
+        <h3 style="font-size:0.8rem;margin:1rem 0 0.75rem;color:var(--color-text-secondary)">design-system.css (older variables — used by chemical card headers)</h3>
+        <div class="sg-row">
+            <div class="sg-swatch-cell"><div class="sg-swatch" style="background:var(--chem-c)"></div><span class="sg-label">--chem-c</span></div>
+            <div class="sg-swatch-cell"><div class="sg-swatch" style="background:var(--chem-n)"></div><span class="sg-label">--chem-n</span></div>
+            <div class="sg-swatch-cell"><div class="sg-swatch" style="background:var(--chem-d)"></div><span class="sg-label">--chem-d</span></div>
+            <div class="sg-swatch-cell"><div class="sg-swatch" style="background:var(--chem-q)"></div><span class="sg-label">--chem-q</span></div>
+        </div>
+    </section>
+
+    <!-- ── 2. Typography ─────────────────────────────────────────────────── -->
+    <section id="typography" class="sg-section" aria-labelledby="typography-title">
+        <h2 id="typography-title" class="sg-section-title">Typography</h2>
+        <p style="font-size:2rem;font-weight:900;line-height:1.2;margin-bottom:0.5rem">Heading XL — 2rem / 900</p>
+        <p style="font-size:1.5rem;font-weight:700;line-height:1.3;margin-bottom:0.5rem">Heading LG — 1.5rem / 700</p>
+        <p style="font-size:1.25rem;font-weight:700;line-height:1.4;margin-bottom:0.5rem">Heading MD — 1.25rem / 700</p>
+        <p style="font-size:1rem;font-weight:700;line-height:1.5;margin-bottom:0.5rem">Heading SM — 1rem / 700</p>
+        <hr style="border-color:var(--color-border);margin:1rem 0">
+        <p style="font-size:1rem;margin-bottom:0.5rem;color:var(--color-text-primary)">Body — 1rem — primary text color</p>
+        <p style="font-size:0.875rem;margin-bottom:0.5rem;color:var(--color-text-secondary)">Body SM — 0.875rem — secondary text color</p>
+        <p style="font-size:0.75rem;margin-bottom:0.5rem;color:var(--color-text-tertiary)">Caption — 0.75rem — tertiary text color</p>
+        <p style="font-size:0.75rem;margin-bottom:0.5rem;font-family:monospace;color:var(--color-text-secondary)">Mono — 0.75rem — monospace (prices, IDs)</p>
+        <hr style="border-color:var(--color-border);margin:1rem 0">
+        <p style="color:var(--color-success);font-weight:600;margin-bottom:0.25rem">text-success — profit / buy</p>
+        <p style="color:var(--color-error);font-weight:600;margin-bottom:0.25rem">text-error — loss / sell / danger</p>
+        <p style="color:var(--color-warning);font-weight:600;margin-bottom:0.25rem">text-warning — caution</p>
+        <p style="color:var(--color-info);font-weight:600;margin-bottom:0.25rem">text-info — informational</p>
+        <p style="color:var(--color-chemical-c);font-weight:600;margin-bottom:0.25rem">Chemical C — blue</p>
+        <p style="color:var(--color-chemical-n);font-weight:600;margin-bottom:0.25rem">Chemical N — purple</p>
+        <p style="color:var(--color-chemical-d);font-weight:600;margin-bottom:0.25rem">Chemical D — gold</p>
+        <p style="color:var(--color-chemical-q);font-weight:600;margin-bottom:0.25rem">Chemical Q — red</p>
+    </section>
+
+    <!-- ── 3. Buttons ────────────────────────────────────────────────────── -->
+    <section id="buttons" class="sg-section" aria-labelledby="buttons-title">
+        <h2 id="buttons-title" class="sg-section-title">Buttons</h2>
+
+        <h3 style="font-size:0.8rem;margin-bottom:0.75rem;color:var(--color-text-secondary)">design-system.css classes</h3>
+        <div class="sg-row">
+            <div><button class="btn-primary">btn-primary</button><p class="sg-label">btn-primary</p></div>
+            <div><button class="btn-blue">btn-blue</button><p class="sg-label">btn-blue</p></div>
+            <div><button class="btn-sell">btn-sell</button><p class="sg-label">btn-sell</p></div>
+        </div>
+
+        <h3 style="font-size:0.8rem;margin:1.5rem 0 0.75rem;color:var(--color-text-secondary)">shared-styles.js / UnoCSS shortcuts</h3>
+        <div class="sg-row">
+            <div><button class="btn btn-primary">btn btn-primary</button><p class="sg-label">.btn.btn-primary</p></div>
+            <div><button class="btn btn-secondary">btn btn-secondary</button><p class="sg-label">.btn.btn-secondary</p></div>
+            <div><button class="btn btn-danger">btn btn-danger</button><p class="sg-label">.btn.btn-danger</p></div>
+        </div>
+
+        <h3 style="font-size:0.8rem;margin:1.5rem 0 0.75rem;color:var(--color-text-secondary)">States</h3>
+        <div class="sg-row">
+            <div><button class="btn btn-primary">Default</button><p class="sg-label">default</p></div>
+            <div><button class="btn btn-primary" style="outline:2px solid var(--color-brand-primary);outline-offset:2px">Focus</button><p class="sg-label">focus (simulated)</p></div>
+            <div><button class="btn btn-primary" disabled>Disabled</button><p class="sg-label">disabled</p></div>
+        </div>
+
+        <h3 style="font-size:0.8rem;margin:1.5rem 0 0.75rem;color:var(--color-text-secondary)">Chemical action buttons (design-system.css --chem-* colors with dark text)</h3>
+        <div class="sg-row">
+            <div><button class="btn" style="background:var(--chem-c);color:#111;font-weight:700">Buy C</button><p class="sg-label">--chem-c</p></div>
+            <div><button class="btn" style="background:var(--chem-n);color:#111;font-weight:700">Buy N</button><p class="sg-label">--chem-n</p></div>
+            <div><button class="btn" style="background:var(--chem-d);color:#111;font-weight:700">Buy D</button><p class="sg-label">--chem-d</p></div>
+            <div><button class="btn" style="background:var(--chem-q);color:#111;font-weight:700">Buy Q</button><p class="sg-label">--chem-q</p></div>
+        </div>
+    </section>
+
+    <!-- ── 4. Badges ─────────────────────────────────────────────────────── -->
+    <section id="badges" class="sg-section" aria-labelledby="badges-title">
+        <h2 id="badges-title" class="sg-section-title">Badges</h2>
+
+        <h3 style="font-size:0.8rem;margin-bottom:0.75rem;color:var(--color-text-secondary)">Chemical badges (design-system.css)</h3>
+        <div class="sg-row">
+            <div><span class="badge-chem-c">C · Carbon</span><p class="sg-label">.badge-chem-c</p></div>
+            <div><span class="badge-chem-n">N · Nitrogen</span><p class="sg-label">.badge-chem-n</p></div>
+            <div><span class="badge-chem-d">D · Deuterium</span><p class="sg-label">.badge-chem-d</p></div>
+            <div><span class="badge-chem-q">Q · Quarkonium</span><p class="sg-label">.badge-chem-q</p></div>
+        </div>
+
+        <h3 style="font-size:0.8rem;margin:1.5rem 0 0.75rem;color:var(--color-text-secondary)">Status colors (as text — these variables are designed for text on page backgrounds)</h3>
+        <div class="sg-row">
+            <div>
+                <span style="border:2px solid var(--color-success);color:var(--color-success);padding:0.25rem 0.6rem;border-radius:9999px;font-size:0.75rem;font-weight:700">Success</span>
+                <p class="sg-label">--color-success</p>
+            </div>
+            <div>
+                <span style="border:2px solid var(--color-error);color:var(--color-error);padding:0.25rem 0.6rem;border-radius:9999px;font-size:0.75rem;font-weight:700">Error</span>
+                <p class="sg-label">--color-error</p>
+            </div>
+            <div>
+                <span style="border:2px solid var(--color-warning);color:var(--color-warning);padding:0.25rem 0.6rem;border-radius:9999px;font-size:0.75rem;font-weight:700">Warning</span>
+                <p class="sg-label">--color-warning</p>
+            </div>
+            <div>
+                <span style="border:2px solid var(--color-info);color:var(--color-info);padding:0.25rem 0.6rem;border-radius:9999px;font-size:0.75rem;font-weight:700">Info</span>
+                <p class="sg-label">--color-info</p>
+            </div>
+            <div>
+                <span style="border:2px solid var(--color-waiting);color:var(--color-waiting);padding:0.25rem 0.6rem;border-radius:9999px;font-size:0.75rem;font-weight:700">Waiting</span>
+                <p class="sg-label">--color-waiting</p>
+            </div>
+        </div>
+
+        <h3 style="font-size:0.8rem;margin:1.5rem 0 0.75rem;color:var(--color-text-secondary)">Notification count badge</h3>
+        <div class="sg-row">
+            <div style="position:relative;display:inline-block">
+                <button class="btn btn-secondary" aria-label="Notifications, 3 unread">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+                </button>
+                <span aria-hidden="true" style="position:absolute;top:-6px;right:-6px;background:var(--color-error);color:#fff;border-radius:9999px;font-size:0.65rem;font-weight:700;padding:1px 5px;min-width:18px;text-align:center">3</span>
+            </div>
+        </div>
+    </section>
+
+    <!-- ── 5. Cards ──────────────────────────────────────────────────────── -->
+    <section id="cards" class="sg-section" aria-labelledby="cards-title">
+        <h2 id="cards-title" class="sg-section-title">Cards</h2>
+
+        <h3 style="font-size:0.8rem;margin-bottom:0.75rem;color:var(--color-text-secondary)">Chemical element cards (design-system.css)</h3>
+        <div class="sg-row">
+            <!-- C card -->
+            <div class="chemical-card card-border-c" style="width:160px" aria-label="Chemical C card">
+                <div class="card-header-c">C</div>
+                <div style="padding:1rem;display:flex;flex-direction:column;gap:0.5rem">
+                    <div style="display:flex;justify-content:space-between">
+                        <span style="font-size:0.75rem;color:var(--text-muted)">Inventory</span>
+                        <span style="font-weight:700">42</span>
+                    </div>
+                    <div style="display:flex;justify-content:space-between">
+                        <span style="font-size:0.75rem;color:var(--text-muted)">Shadow $</span>
+                        <span style="font-weight:700;color:var(--color-chemical-c)">$12.50</span>
+                    </div>
+                    <button class="btn-sell" style="width:100%;margin-top:0.5rem">Sell</button>
+                </div>
+            </div>
+            <!-- N card -->
+            <div class="chemical-card card-border-n" style="width:160px" aria-label="Chemical N card">
+                <div class="card-header-n">N</div>
+                <div style="padding:1rem;display:flex;flex-direction:column;gap:0.5rem">
+                    <div style="display:flex;justify-content:space-between">
+                        <span style="font-size:0.75rem;color:var(--text-muted)">Inventory</span>
+                        <span style="font-weight:700">17</span>
+                    </div>
+                    <div style="display:flex;justify-content:space-between">
+                        <span style="font-size:0.75rem;color:var(--text-muted)">Shadow $</span>
+                        <span style="font-weight:700;color:var(--color-chemical-n)">$8.00</span>
+                    </div>
+                    <button class="btn-sell" style="width:100%;margin-top:0.5rem">Sell</button>
+                </div>
+            </div>
+            <!-- D card -->
+            <div class="chemical-card card-border-d" style="width:160px" aria-label="Chemical D card">
+                <div class="card-header-d">D</div>
+                <div style="padding:1rem;display:flex;flex-direction:column;gap:0.5rem">
+                    <div style="display:flex;justify-content:space-between">
+                        <span style="font-size:0.75rem;color:var(--text-muted)">Inventory</span>
+                        <span style="font-weight:700">5</span>
+                    </div>
+                    <div style="display:flex;justify-content:space-between">
+                        <span style="font-size:0.75rem;color:var(--text-muted)">Shadow $</span>
+                        <span style="font-weight:700;color:var(--color-chemical-d)">$31.00</span>
+                    </div>
+                    <button class="btn-sell" style="width:100%;margin-top:0.5rem">Sell</button>
+                </div>
+            </div>
+            <!-- Q card -->
+            <div class="chemical-card card-border-q" style="width:160px" aria-label="Chemical Q card">
+                <div class="card-header-q">Q</div>
+                <div style="padding:1rem;display:flex;flex-direction:column;gap:0.5rem">
+                    <div style="display:flex;justify-content:space-between">
+                        <span style="font-size:0.75rem;color:var(--text-muted)">Inventory</span>
+                        <span style="font-weight:700">0</span>
+                    </div>
+                    <div style="display:flex;justify-content:space-between">
+                        <span style="font-size:0.75rem;color:var(--text-muted)">Shadow $</span>
+                        <span style="font-weight:700;color:var(--color-chemical-q)">$5.25</span>
+                    </div>
+                    <button class="btn-sell" style="width:100%;margin-top:0.5rem" disabled>Sell</button>
+                </div>
+            </div>
+        </div>
+
+        <h3 style="font-size:0.8rem;margin:1.5rem 0 0.75rem;color:var(--color-text-secondary)">header-card (financial panel)</h3>
+        <div class="header-card" style="max-width:360px">
+            <div style="display:flex;justify-content:space-between;align-items:baseline">
+                <span style="font-size:0.75rem;color:var(--text-muted)">Net Profit</span>
+                <span style="font-size:1.5rem;font-weight:900;color:var(--color-success)">+$1,234</span>
+            </div>
+            <div style="display:flex;justify-content:space-between;align-items:baseline;margin-top:0.5rem">
+                <span style="font-size:0.75rem;color:var(--text-muted)">Current Funds</span>
+                <span style="font-size:1rem;font-weight:700">$11,234</span>
+            </div>
+        </div>
+
+        <h3 style="font-size:0.8rem;margin:1.5rem 0 0.75rem;color:var(--color-text-secondary)">Own listing (highlighted border)</h3>
+        <div style="background:var(--color-bg-listing-mine);border:2px solid var(--color-border-listing-mine);border-radius:0.5rem;padding:1rem;max-width:360px">
+            <div style="display:flex;justify-content:space-between">
+                <span style="font-weight:600">Sell 10 × C</span>
+                <span style="color:var(--color-border-listing-mine);font-weight:700">$15.00 ea</span>
+            </div>
+            <p style="font-size:0.75rem;color:var(--color-text-tertiary);margin:0.25rem 0 0">Your listing — pending</p>
+        </div>
+    </section>
+
+    <!-- ── 6. Forms ──────────────────────────────────────────────────────── -->
+    <section id="forms" class="sg-section" aria-labelledby="forms-title">
+        <h2 id="forms-title" class="sg-section-title">Forms</h2>
+
+        <form style="max-width:480px;display:flex;flex-direction:column;gap:1.25rem" onsubmit="return false">
+
+            <!-- Correct: label + input -->
+            <div style="display:flex;flex-direction:column;gap:0.375rem">
+                <label for="qty-input" style="font-size:0.875rem;font-weight:600">
+                    Quantity <span style="color:var(--color-error)" aria-label="required">*</span>
+                </label>
+                <input id="qty-input" type="number" min="1" max="999" value="10"
+                    style="background:var(--color-bg-tertiary);color:var(--color-text-primary);border:1px solid var(--color-border);border-radius:0.375rem;padding:0.5rem 0.75rem;font-size:1rem;width:100%">
+            </div>
+
+            <!-- Correct: label + select -->
+            <div style="display:flex;flex-direction:column;gap:0.375rem">
+                <label for="chem-select" style="font-size:0.875rem;font-weight:600">Chemical</label>
+                <select id="chem-select"
+                    style="background:var(--color-bg-tertiary);color:var(--color-text-primary);border:1px solid var(--color-border);border-radius:0.375rem;padding:0.5rem 0.75rem;font-size:1rem;width:100%">
+                    <option value="C">C — Carbon</option>
+                    <option value="N">N — Nitrogen</option>
+                    <option value="D">D — Deuterium</option>
+                    <option value="Q">Q — Quarkonium</option>
+                </select>
+            </div>
+
+            <!-- Correct: label + radio group -->
+            <fieldset style="border:1px solid var(--color-border);border-radius:0.375rem;padding:0.75rem 1rem">
+                <legend style="font-size:0.875rem;font-weight:600;padding:0 0.25rem">Order type</legend>
+                <div style="display:flex;gap:1.5rem;margin-top:0.5rem">
+                    <label style="display:flex;align-items:center;gap:0.5rem;cursor:pointer">
+                        <input type="radio" name="order-type" value="buy" checked> Buy
+                    </label>
+                    <label style="display:flex;align-items:center;gap:0.5rem;cursor:pointer">
+                        <input type="radio" name="order-type" value="sell"> Sell
+                    </label>
+                </div>
+            </fieldset>
+
+            <!-- Correct: checkbox with label -->
+            <label style="display:flex;align-items:center;gap:0.75rem;cursor:pointer">
+                <input type="checkbox" id="auto-renew">
+                <span style="font-size:0.875rem">Auto-renew listing if not filled</span>
+            </label>
+
+            <!-- Error state -->
+            <div style="display:flex;flex-direction:column;gap:0.375rem">
+                <label for="price-input" style="font-size:0.875rem;font-weight:600">Price</label>
+                <input id="price-input" type="number" value="-5" aria-invalid="true" aria-describedby="price-error"
+                    style="background:var(--color-bg-tertiary);color:var(--color-text-primary);border:2px solid var(--color-error);border-radius:0.375rem;padding:0.5rem 0.75rem;font-size:1rem;width:100%">
+                <span id="price-error" role="alert" style="font-size:0.75rem;color:var(--color-error)">Price must be greater than 0</span>
+            </div>
+
+            <!-- Disabled state -->
+            <div style="display:flex;flex-direction:column;gap:0.375rem">
+                <label for="team-id" style="font-size:0.875rem;font-weight:600;opacity:0.5">Team ID (read only)</label>
+                <input id="team-id" type="text" value="team_alpha" disabled
+                    style="background:var(--color-bg-tertiary);color:var(--color-text-tertiary);border:1px solid var(--color-border);border-radius:0.375rem;padding:0.5rem 0.75rem;font-size:1rem;width:100%;opacity:0.5;cursor:not-allowed">
+            </div>
+
+            <div style="display:flex;gap:0.75rem">
+                <button type="submit" class="btn-primary">Submit Order</button>
+                <button type="reset" class="btn btn-secondary">Cancel</button>
+            </div>
+        </form>
+
+        <!-- A11y issue demo -->
+        <div style="margin-top:2rem;padding:1rem;border:1px dashed var(--color-error);border-radius:0.5rem">
+            <p style="font-size:0.75rem;color:var(--color-error);font-weight:700;margin-bottom:0.75rem">⚠ Known a11y gap — inputs without labels (axe will flag these)</p>
+            <div style="display:flex;gap:0.75rem;flex-wrap:wrap">
+                <input type="number" placeholder="qty" aria-label="Quantity (unlabeled demo)"
+                    style="background:var(--color-bg-tertiary);color:var(--color-text-primary);border:1px solid var(--color-error);border-radius:0.375rem;padding:0.5rem;width:80px">
+                <input type="text" placeholder="price"
+                    style="background:var(--color-bg-tertiary);color:var(--color-text-primary);border:1px solid var(--color-error);border-radius:0.375rem;padding:0.5rem;width:80px">
+                <p style="font-size:0.7rem;color:var(--color-text-tertiary);align-self:center">first input has aria-label; second does not</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- ── 7. Tables ─────────────────────────────────────────────────────── -->
+    <section id="tables" class="sg-section" aria-labelledby="tables-title">
+        <h2 id="tables-title" class="sg-section-title">Tables</h2>
+        <div style="overflow-x:auto">
+            <table style="width:100%;border-collapse:collapse;font-size:0.875rem" aria-label="Market listings">
+                <thead>
+                    <tr style="background:var(--color-bg-tertiary);text-align:left">
+                        <th scope="col" style="padding:0.625rem 1rem;font-weight:700;border-bottom:2px solid var(--color-border)">Team</th>
+                        <th scope="col" style="padding:0.625rem 1rem;font-weight:700;border-bottom:2px solid var(--color-border)">Chemical</th>
+                        <th scope="col" style="padding:0.625rem 1rem;font-weight:700;border-bottom:2px solid var(--color-border)">Type</th>
+                        <th scope="col" style="padding:0.625rem 1rem;font-weight:700;border-bottom:2px solid var(--color-border);text-align:right">Qty</th>
+                        <th scope="col" style="padding:0.625rem 1rem;font-weight:700;border-bottom:2px solid var(--color-border);text-align:right">Price</th>
+                        <th scope="col" style="padding:0.625rem 1rem;font-weight:700;border-bottom:2px solid var(--color-border)">Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr style="border-bottom:1px solid var(--color-border)">
+                        <td style="padding:0.625rem 1rem">Alpha</td>
+                        <td style="padding:0.625rem 1rem"><span class="badge-chem-c" style="min-width:unset;padding:0.2rem 0.5rem;font-size:0.75rem">C</span></td>
+                        <td style="padding:0.625rem 1rem;color:var(--color-success);font-weight:600">BUY</td>
+                        <td style="padding:0.625rem 1rem;text-align:right;font-family:monospace">20</td>
+                        <td style="padding:0.625rem 1rem;text-align:right;font-family:monospace">$14.00</td>
+                        <td style="padding:0.625rem 1rem"><button class="btn-sell" style="padding:0.25rem 0.75rem;font-size:0.75rem">Sell to</button></td>
+                    </tr>
+                    <tr style="background:var(--color-bg-listing-mine);border:1px solid var(--color-border-listing-mine)">
+                        <td style="padding:0.625rem 1rem">You ★</td>
+                        <td style="padding:0.625rem 1rem"><span class="badge-chem-n" style="min-width:unset;padding:0.2rem 0.5rem;font-size:0.75rem">N</span></td>
+                        <td style="padding:0.625rem 1rem;color:var(--color-error);font-weight:600">SELL</td>
+                        <td style="padding:0.625rem 1rem;text-align:right;font-family:monospace">10</td>
+                        <td style="padding:0.625rem 1rem;text-align:right;font-family:monospace">$9.00</td>
+                        <td style="padding:0.625rem 1rem"><button class="btn btn-secondary" style="padding:0.25rem 0.75rem;font-size:0.75rem">Cancel</button></td>
+                    </tr>
+                    <tr style="border-bottom:1px solid var(--color-border)">
+                        <td style="padding:0.625rem 1rem">Bravo</td>
+                        <td style="padding:0.625rem 1rem"><span class="badge-chem-d" style="min-width:unset;padding:0.2rem 0.5rem;font-size:0.75rem">D</span></td>
+                        <td style="padding:0.625rem 1rem;color:var(--color-error);font-weight:600">SELL</td>
+                        <td style="padding:0.625rem 1rem;text-align:right;font-family:monospace">5</td>
+                        <td style="padding:0.625rem 1rem;text-align:right;font-family:monospace">$28.00</td>
+                        <td style="padding:0.625rem 1rem"><button class="btn-blue" style="padding:0.25rem 0.75rem;font-size:0.75rem">Buy</button></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </section>
+
+    <!-- ── 8. Toasts / Notifications ─────────────────────────────────────── -->
+    <section id="toasts" class="sg-section" aria-labelledby="toasts-title">
+        <h2 id="toasts-title" class="sg-section-title">Toasts &amp; Notifications</h2>
+        <div style="display:flex;flex-direction:column;gap:0.75rem;max-width:420px">
+            <div class="toast toast-success" role="status">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg>
+                <div><strong>Trade complete</strong><br><span style="font-size:0.875rem">Sold 10 × C to Team Alpha for $140.00</span></div>
+            </div>
+            <div class="toast toast-error" role="alert">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+                <div><strong>Listing cancelled</strong><br><span style="font-size:0.875rem">Your sell order for D was removed by admin</span></div>
+            </div>
+            <div class="toast toast-warning" role="status">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+                <div><strong>Low inventory</strong><br><span style="font-size:0.875rem">You have 0 units of Q remaining</span></div>
+            </div>
+            <div class="toast toast-info" role="status">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+                <div><strong>Counter offer received</strong><br><span style="font-size:0.875rem">Team Bravo countered your offer at $11.00</span></div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ── 9. Modals / Overlays ───────────────────────────────────────────── -->
+    <section id="modals" class="sg-section" aria-labelledby="modals-title">
+        <h2 id="modals-title" class="sg-section-title">Modal — inline demo (not hidden)</h2>
+        <div class="sg-modal-demo" role="dialog" aria-labelledby="demo-modal-title" aria-modal="true">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem;padding-bottom:0.75rem;border-bottom:1px solid var(--color-border)">
+                <h3 id="demo-modal-title" style="font-size:1.125rem;font-weight:700">Confirm Trade</h3>
+                <button aria-label="Close dialog" style="background:none;border:none;cursor:pointer;color:var(--color-text-tertiary);padding:0.25rem">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                </button>
+            </div>
+            <p style="font-size:0.875rem;color:var(--color-text-secondary);margin-bottom:1.25rem">
+                Sell <strong>10 × C</strong> to <strong>Team Alpha</strong> at <strong>$14.00 each</strong>?<br>
+                <span style="color:var(--color-success);font-weight:600">+$140.00</span> to your funds.
+            </p>
+            <div style="display:flex;gap:0.75rem;justify-content:flex-end">
+                <button class="btn btn-secondary">Cancel</button>
+                <button class="btn-primary">Confirm</button>
+            </div>
+        </div>
+    </section>
+
+    <!-- ── 10. Focus States ───────────────────────────────────────────────── -->
+    <section id="focus" class="sg-section sg-focus-demo" aria-labelledby="focus-title">
+        <h2 id="focus-title" class="sg-section-title">Focus States (Tab through these)</h2>
+        <p style="font-size:0.875rem;color:var(--color-text-secondary);margin-bottom:1rem">
+            Tab through the elements below. Each should show a visible 2px green outline. Low-vision users depend on this.
+        </p>
+        <div style="display:flex;gap:0.75rem;flex-wrap:wrap;align-items:center">
+            <button class="btn-primary">Button</button>
+            <a href="#focus" style="color:var(--color-info)">Link</a>
+            <input type="text" value="Input field" aria-label="Sample text field"
+                style="background:var(--color-bg-tertiary);color:var(--color-text-primary);border:1px solid var(--color-border);border-radius:0.375rem;padding:0.5rem 0.75rem;font-size:0.875rem">
+            <select aria-label="Sample dropdown" style="background:var(--color-bg-tertiary);color:var(--color-text-primary);border:1px solid var(--color-border);border-radius:0.375rem;padding:0.5rem 0.75rem;font-size:0.875rem">
+                <option>Select option</option>
+            </select>
+            <label style="display:flex;align-items:center;gap:0.5rem;cursor:pointer">
+                <input type="checkbox"> Checkbox
+            </label>
+        </div>
+    </section>
+
+    <!-- ── 11. Hover States (simulated for axe scanning) ────────────────── -->
+    <section id="hover-states" class="sg-section" aria-labelledby="hover-title">
+        <h2 id="hover-title" class="sg-section-title">Hover States — simulated with <code>.is-hovered</code></h2>
+        <p style="font-size:0.875rem;color:var(--color-text-secondary);margin-bottom:1.5rem">
+            CSS <code>:hover</code> pseudo-states are invisible to axe-core because the browser never applies
+            them during a static scan. These elements have <code>.is-hovered</code> applied statically so that
+            the rendered colour combination is present in the DOM and checkable by automated tools.
+            The <code>.sg-notif-item</code> rows are a replica of the Lit shadow-DOM component
+            (which axe cannot pierce) using the same CSS values.
+        </p>
+
+        <h3 style="font-size:0.8rem;margin-bottom:0.75rem;color:var(--color-text-secondary)">.listing-item — marketplace row</h3>
+        <div class="sg-row">
+            <div>
+                <div class="listing-item" style="min-width:280px">
+                    <span style="font-size:0.875rem;color:var(--color-text-primary)">Sell 100 × C · <strong>$4.20/gal</strong></span>
+                    <span style="font-size:0.75rem;color:var(--color-text-tertiary);display:block;margin-top:0.25rem">Team Alpha · posted 2 min ago</span>
+                </div>
+                <p class="sg-label">default</p>
+            </div>
+            <div>
+                <div class="listing-item is-hovered" style="min-width:280px">
+                    <span style="font-size:0.875rem;color:var(--color-text-primary)">Sell 100 × C · <strong>$4.20/gal</strong></span>
+                    <span style="font-size:0.75rem;color:var(--color-text-tertiary);display:block;margin-top:0.25rem">Team Alpha · posted 2 min ago</span>
+                </div>
+                <p class="sg-label">hover (.is-hovered)</p>
+            </div>
+        </div>
+
+        <h3 style="font-size:0.8rem;margin:1.5rem 0 0.75rem;color:var(--color-text-secondary)">.btn-secondary — cancel / secondary action</h3>
+        <div class="sg-row">
+            <div>
+                <button class="btn btn-secondary">Cancel</button>
+                <p class="sg-label">default</p>
+            </div>
+            <div>
+                <button class="btn btn-secondary is-hovered">Cancel</button>
+                <p class="sg-label">hover (.is-hovered)</p>
+            </div>
+        </div>
+
+        <h3 style="font-size:0.8rem;margin:1.5rem 0 0.75rem;color:var(--color-text-secondary)">.sg-notif-item — notification panel row (shadow-DOM replica)</h3>
+        <div class="sg-row">
+            <div>
+                <div class="sg-notif-item">
+                    <div><span class="sg-notif-type">Trade</span><span class="sg-notif-time">2 min ago</span></div>
+                    <div class="sg-notif-message">Sold 50 × N to Team Bravo for $210.00</div>
+                </div>
+                <p class="sg-label">default</p>
+            </div>
+            <div>
+                <div class="sg-notif-item is-hovered">
+                    <div><span class="sg-notif-type">Trade</span><span class="sg-notif-time">2 min ago</span></div>
+                    <div class="sg-notif-message">Sold 50 × N to Team Bravo for $210.00</div>
+                </div>
+                <p class="sg-label">hover (.is-hovered)</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- ── 12. Animations ────────────────────────────────────────────────── -->
+    <section id="animations" class="sg-section" aria-labelledby="animations-title">
+        <h2 id="animations-title" class="sg-section-title">Animations (motion — respects prefers-reduced-motion in browsers)</h2>
+        <div class="sg-row" style="align-items:center">
+            <div>
+                <div class="anim-spin" role="img" aria-label="Loading spinner" style="width:32px;height:32px;border:3px solid var(--color-border);border-top-color:var(--color-brand-primary);border-radius:50%"></div>
+                <p class="sg-label">spin (loading)</p>
+            </div>
+            <div>
+                <div class="anim-pulse" style="width:12px;height:12px;border-radius:50%;background:var(--color-success)"></div>
+                <p class="sg-label">pulse-green (live)</p>
+            </div>
+            <div>
+                <span class="badge-chem-c anim-pop">C</span>
+                <p class="sg-label">success-pop (trade)</p>
+            </div>
+            <div>
+                <button class="btn-primary anim-shake" onclick="this.style.animation='none';void this.offsetWidth;this.style.animation=''">Shake me</button>
+                <p class="sg-label">shake (error)</p>
+            </div>
+        </div>
+    </section>
+
+</main>
+
+<script>
+function setTheme(theme, btn) {
+    document.documentElement.setAttribute('data-theme', theme);
+    document.querySelectorAll('.sg-theme-btn').forEach(b => {
+        b.setAttribute('aria-pressed', b === btn ? 'true' : 'false');
+    });
+    // Announce theme change to screen readers
+    const announcer = document.getElementById('sr-announcer');
+    if (announcer) announcer.textContent = theme.replace('-', ' ') + ' theme active';
+}
+</script>
+
+</body>
+</html>

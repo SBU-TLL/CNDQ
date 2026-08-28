@@ -1,5 +1,8 @@
 .env
 
+# Google service-account credentials — secret, must never be committed
+credentials.json
+
 # Data directory (symlink in production, actual directory in development)
 # Ignore data directory/symlink completely
 /data
