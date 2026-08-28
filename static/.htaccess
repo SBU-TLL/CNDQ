@@ -1,0 +1,32 @@
+# Production - use Shibboleth authentication
+# Note: Local development uses .env file instead (Herd uses Nginx, not Apache)
+<IfModule mod_shib>
+    AuthType shibboleth
+    ShibRequestSetting requireSession true
+    require shibboleth
+</IfModule>
+SetEnv PHP_VALUE "session.save_path=/home/tltsecure/apache2/htdocs/userData/sessionData"
+
+# URL Rewriting: Make .php extension optional
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+
+    # Add trailing slash to directories (fixes relative path issues)
+    RewriteCond %{REQUEST_FILENAME} -d
+    RewriteCond %{REQUEST_URI} !(.*)/$
+    RewriteRule ^(.*)$ $1/ [L,R=301]
+
+    # If the request is for a file or directory that exists, serve it directly
+    RewriteCond %{REQUEST_FILENAME} -f [OR]
+    RewriteCond %{REQUEST_FILENAME} -d
+    RewriteRule ^ - [L]
+
+    # If the request doesn't have .php extension and the .php file exists, rewrite to it
+    RewriteCond %{REQUEST_FILENAME} !-f
+    RewriteCond %{REQUEST_FILENAME}\.php -f
+    RewriteRule ^(.*)$ $1.php [L,QSA]
+
+    # If the request is for a directory, try index.php
+    RewriteCond %{REQUEST_FILENAME} -d
+    RewriteRule ^(.*)$ $1/index.php [L,QSA]
+</IfModule>

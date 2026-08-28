@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "description": "Automated testing for CNDQ Chemical Trading Game",
   "scripts": {
-    "server": "php -S localhost:8000 -t ..",
+    "server": "php -S localhost:8000 -t static",
     "test": "npx playwright test",
     "test:sim": "node tests/run.js --test playwright",
     "test:all": "npx playwright test && node tests/run.js --test playwright",

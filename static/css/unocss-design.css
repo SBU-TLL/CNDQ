@@ -1,0 +1,38 @@
+/**
+ * CNDQ Marketplace - Pure UnoCSS Design
+ * Minimal custom CSS - most styling via UnoCSS utility classes
+ */
+
+/* Only animations and web component styles that can't be done with UnoCSS utilities */
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+@keyframes pulse-green {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.5; }
+}
+
+/* Focus styles for accessibility */
+*:focus-visible {
+    outline: 2px solid #10b981;
+    outline-offset: 2px;
+}
+
+/* Skip link for accessibility */
+.skip-link {
+    position: absolute;
+    top: -100px;
+    left: 0;
+    background: #059669;
+    color: white;
+    padding: 0.5rem 1rem;
+    font-weight: 600;
+    text-decoration: none;
+    z-index: 100;
+}
+
+.skip-link:focus {
+    top: 0;
+}
