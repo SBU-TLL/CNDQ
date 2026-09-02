@@ -42,6 +42,7 @@ return [
         'cn' => ['testadmin'],
         'eppn' => ['test.admin@stonybrook.edu'],
         'mail' => ['test.admin@stonybrook.edu'],
+        'email' => ['test.admin@stonybrook.edu'],
         'givenName' => ['Test'],
         'nickname' => ['Test'],
         'sn' => ['Admin'],

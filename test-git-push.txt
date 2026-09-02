@@ -1,2 +1,0 @@
-Git push test performed on Monday, March 9, 2026.
-This is a minimal change to verify connectivity and push permissions.

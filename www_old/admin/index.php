@@ -9,7 +9,7 @@ require_once __DIR__ . '/../config.php';
 
 // Check if user is admin
 if (!isAdmin()) {
-    header('Location: ./access-denied.html');
+  //  header('Location: ./access-denied.html');
     exit;
 }
 

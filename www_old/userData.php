@@ -3,10 +3,11 @@
 function isAdmin() {
     // Admin allowlist - real users with special privileges (apply in ALL environments)
     $adminEmails = [
-        'admin@stonybrook.edu',
-        'pstdenis@stonybrook.edu',
+        'rvonrauchhau@stonybrook.edu',
         'hlewis@stonybrook.edu',
         'tsexton@stonybrook.edu',
+        'test.admin@stonybrook.edu'
+        
     ];
 
     // Dev/test accounts are granted admin ONLY in local development — never in
@@ -14,14 +15,12 @@ function isAdmin() {
     // fallback (dev_user@localhost) is ever reached on a misconfigured prod server.
     if (isLocalDev()) {
         $adminEmails = array_merge($adminEmails, [
-            'dev_user@localhost',        // Local development default user
-            'test_mail1@stonybrook.edu', // Test users
-            'test_mail2@stonybrook.edu',
-            'test_mail3@stonybrook.edu',
+            'test.admin@stonybrook.edu', // Test user
         ]);
     }
 
     $currentEmail = getCurrentUserEmail();
+
     return in_array($currentEmail, $adminEmails, true);
 }
 

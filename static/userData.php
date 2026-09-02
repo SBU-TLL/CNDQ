@@ -3,17 +3,16 @@
 function isAdmin() {
     // Admin allowlist - users with special privileges
     $adminEmails = [
-        'admin@stonybrook.edu',
-        'pstdenis@stonybrook.edu',
+        'rvonrauchhau@stonybrook.edu',
         'hlewis@stonybrook.edu',
         'tsexton@stonybrook.edu',
-        'dev_user@localhost', // Local development default user
-        'test_mail1@stonybrook.edu', // Test user
-        'test_mail2@stonybrook.edu',
-        'test_mail3@stonybrook.edu'
+        'test.admin@stonybrook.edu', // Test user
+        'test.professor@stonybrook.edu', // Test user
+        
     ];
 
     $currentEmail = getCurrentUserEmail();
+    
     return in_array($currentEmail, $adminEmails);
 }
 

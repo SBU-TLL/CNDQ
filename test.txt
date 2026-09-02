@@ -1,3 +1,0 @@
-<br />
-<b>Deprecated</b>:  fputcsv(): the $escape parameter must be provided as its default value will change in <b>/Users/priyaprakash/CNDQRoot/CNDQ/api/admin/reports/transactions.php</b> on line <b>66</b><br />
-"No transactions found"
