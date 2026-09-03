@@ -3,7 +3,7 @@
 AuthType shibboleth
 ShibRequestSetting requireSession true
 require shibboleth
-SetEnv PHP_VALUE "session.save_path=/home/tltsecure/apache2/htdocs/userData/sessionData"
+#SetEnv PHP_VALUE "session.save_path=/home/tltsecure/apache2/htdocs/userData/sessionData"
 
 # URL Rewriting: Make .php extension optional
 <IfModule mod_rewrite.c>
