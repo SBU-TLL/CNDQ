@@ -16,15 +16,25 @@
  * to the __DIR__-relative path which is correct for single-instance dev.
  */
 function cndq_data_dir(): string {
-    $script = $_SERVER['SCRIPT_FILENAME'] ?? '';
-    if (!empty($script) && !str_contains($script, 'server.php')) {
-        $pos = strpos($script, '/static/');
-        if ($pos !== false) {
-            return substr($script, 0, $pos) . '/data';
+    $uri = $_SERVER['REQUEST_URI'] ?? '';
+    $path = parse_url($uri, PHP_URL_PATH);
+
+    // Extract URL segments (e.g., ['MBA543', '30', '01'])
+    $segments = array_filter(explode('/', trim($path, '/')));
+    $baseDataDir = realpath(__DIR__ . '/../../data');
+
+    if ($baseDataDir && !empty($segments)) {
+        // Test paths from deepest to shallowest against the data/ directory
+        for ($i = count($segments); $i > 0; $i--) {
+            $candidate = $baseDataDir . '/' . implode('/', array_slice($segments, 0, $i));
+            if (is_dir($candidate)) {
+                return $candidate;
+            }
         }
     }
-    // Herd/local dev fallback: static/lib/../../data = repo-root/data
-    return __DIR__ . '/../../data';
+
+    // Fallback for CLI or default directory
+    return $baseDataDir ?: __DIR__ . '/../../data';
 }
 
 class Database {
